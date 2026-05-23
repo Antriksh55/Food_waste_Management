@@ -1,4 +1,5 @@
 -- Food Waste Reduction Platform — Database Initialisation
+-- This runs on first postgres startup to ensure schema exists
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
