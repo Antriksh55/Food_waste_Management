@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +36,12 @@ public class FoodController {
             @RequestParam(required = false) Integer minQuantity,
             Pageable pageable) {
         return ResponseEntity.ok(foodService.search(city, foodType, minQuantity, pageable));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<FoodPost>> getMyPosts(Authentication auth) {
+        UUID restaurantId = UUID.fromString(auth.getName());
+        return ResponseEntity.ok(foodService.getMyPosts(restaurantId));
     }
 
     @GetMapping("/{id}")

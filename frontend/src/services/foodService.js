@@ -5,6 +5,9 @@ const FOOD_BASE = 'http://localhost:8082'
 export const getFoods = (page = 0, size = 12) =>
   axiosInstance.get(`${FOOD_BASE}/api/foods?page=${page}&size=${size}`)
 
+export const getMyFoods = () =>
+  axiosInstance.get(`${FOOD_BASE}/api/foods/my`)
+
 export const searchFoods = (params) =>
   axiosInstance.get(`${FOOD_BASE}/api/foods/search`, { params })
 

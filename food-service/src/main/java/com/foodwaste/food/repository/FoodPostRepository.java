@@ -31,4 +31,6 @@ public interface FoodPostRepository extends JpaRepository<FoodPost, UUID> {
     List<FoodPost> findByStatusAndExpiryTimeBefore(String status, LocalDateTime time);
 
     List<FoodPost> findByRestaurantId(UUID restaurantId);
+
+    List<FoodPost> findByRestaurantIdOrderByCreatedAtDesc(UUID restaurantId);
 }

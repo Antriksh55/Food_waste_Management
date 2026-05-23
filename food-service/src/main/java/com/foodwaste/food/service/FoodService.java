@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,6 +60,10 @@ public class FoodService {
     public FoodPost getById(UUID postId) {
         return foodPostRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Food post not found: " + postId));
+    }
+
+    public List<FoodPost> getMyPosts(UUID restaurantId) {
+        return foodPostRepository.findByRestaurantIdOrderByCreatedAtDesc(restaurantId);
     }
 
     public Page<FoodPost> listAvailable(Pageable pageable) {
