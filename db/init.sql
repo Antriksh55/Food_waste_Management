@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS food_posts (
     contact_details VARCHAR(255),
     status          VARCHAR(20)  NOT NULL DEFAULT 'AVAILABLE'
                         CHECK (status IN ('AVAILABLE','CLAIMED','EXPIRED')),
+    claimed_by_name VARCHAR(255),
     created_at      TIMESTAMP    NOT NULL DEFAULT NOW()
 );
 

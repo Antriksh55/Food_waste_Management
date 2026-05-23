@@ -33,7 +33,7 @@ public class ClaimService {
     @Value("${notification.service.url}")
     private String notificationServiceUrl;
 
-    public Claim createClaim(UUID foodPostId, UUID ngoId, String authToken) {
+    public Claim createClaim(UUID foodPostId, UUID ngoId, String ngoName, String authToken) {
         // Check food post is AVAILABLE via food-service
         Map<String, Object> foodPost = getFoodPost(foodPostId);
         String status = (String) foodPost.get("status");
@@ -44,6 +44,7 @@ public class ClaimService {
         Claim claim = Claim.builder()
                 .foodPostId(foodPostId)
                 .ngoId(ngoId)
+                .ngoName(ngoName)
                 .status("PENDING")
                 .build();
         Claim saved = claimRepository.save(claim);
@@ -124,12 +125,12 @@ public class ClaimService {
 
         switch (newStatus) {
             case "APPROVED" -> {
-                updateFoodPostStatus(claim.getFoodPostId(), "CLAIMED");
+                updateFoodPostStatus(claim.getFoodPostId(), "CLAIMED", claim.getNgoName());
                 sendNotification(ngoId, "Your claim has been approved!", "CLAIM_APPROVED");
             }
             case "CANCELLED" -> {
                 if ("APPROVED".equals(previousStatus)) {
-                    updateFoodPostStatus(claim.getFoodPostId(), "AVAILABLE");
+                    updateFoodPostStatus(claim.getFoodPostId(), "AVAILABLE", null);
                 }
                 sendNotification(ngoId, "Your claim has been cancelled.", "CLAIM_CANCELLED");
             }
@@ -151,11 +152,15 @@ public class ClaimService {
         }
     }
 
-    private void updateFoodPostStatus(UUID foodPostId, String status) {
-        Map<String, String> body = Map.of("status", status);
+    private void updateFoodPostStatus(UUID foodPostId, String status, String claimedByName) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", status);
+        if (claimedByName != null) {
+            body.put("claimedByName", claimedByName);
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
         restTemplate.put(foodServiceUrl + "/api/foods/" + foodPostId + "/status", entity);
     }
 

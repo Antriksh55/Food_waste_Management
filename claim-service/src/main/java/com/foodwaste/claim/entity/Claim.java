@@ -27,6 +27,9 @@ public class Claim {
     @Column(name = "ngo_id", nullable = false)
     private UUID ngoId;
 
+    @Column(name = "ngo_name")
+    private String ngoName;
+
     @Column(nullable = false)
     @Builder.Default
     private String status = "PENDING";

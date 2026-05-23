@@ -65,13 +65,24 @@ public class FoodService {
         return foodPostRepository.findByStatus("AVAILABLE", pageable);
     }
 
+    public Page<FoodPost> listAllActive(Pageable pageable) {
+        // Returns AVAILABLE + CLAIMED (excludes EXPIRED)
+        return foodPostRepository.findByStatusNot("EXPIRED", pageable);
+    }
+
     public Page<FoodPost> search(String city, String foodType, Integer minQuantity, Pageable pageable) {
         return foodPostRepository.search(city, foodType, minQuantity, pageable);
     }
 
-    public FoodPost updateStatus(UUID postId, String status) {
+    public FoodPost updateStatus(UUID postId, String status, String claimedByName) {
         FoodPost post = getById(postId);
         post.setStatus(status);
+        if ("CLAIMED".equals(status) && claimedByName != null) {
+            post.setClaimedByName(claimedByName);
+        } else if ("AVAILABLE".equals(status)) {
+            // Reset when unclaimed
+            post.setClaimedByName(null);
+        }
         return foodPostRepository.save(post);
     }
 }

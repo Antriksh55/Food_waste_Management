@@ -8,4 +8,7 @@ public class StatusUpdateRequest {
 
     @NotBlank(message = "Status is required")
     private String status;
+
+    // Optional: name of the NGO/volunteer who claimed the food
+    private String claimedByName;
 }

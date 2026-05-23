@@ -31,6 +31,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/foods", "/api/foods/search", "/api/foods/{id}").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/foods/*/status").permitAll()  // internal service-to-service
                 .requestMatchers(HttpMethod.POST, "/api/foods").hasRole("RESTAURANT")
                 .requestMatchers(HttpMethod.PUT, "/api/foods/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/foods/**").hasRole("RESTAURANT")

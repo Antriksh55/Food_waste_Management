@@ -10,4 +10,7 @@ public class ClaimRequest {
 
     @NotNull(message = "foodPostId is required")
     private UUID foodPostId;
+
+    // Name of the NGO/volunteer claiming the food
+    private String ngoName;
 }

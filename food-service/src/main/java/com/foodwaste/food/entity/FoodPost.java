@@ -49,6 +49,9 @@ public class FoodPost {
     @Builder.Default
     private String status = "AVAILABLE";
 
+    @Column(name = "claimed_by_name")
+    private String claimedByName;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

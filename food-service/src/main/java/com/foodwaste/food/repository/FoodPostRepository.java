@@ -17,7 +17,9 @@ public interface FoodPostRepository extends JpaRepository<FoodPost, UUID> {
 
     Page<FoodPost> findByStatus(String status, Pageable pageable);
 
-    @Query("SELECT f FROM FoodPost f WHERE f.status = 'AVAILABLE' " +
+    Page<FoodPost> findByStatusNot(String status, Pageable pageable);
+
+    @Query("SELECT f FROM FoodPost f WHERE f.status != 'EXPIRED' " +
            "AND (:city IS NULL OR LOWER(f.pickupAddress) LIKE LOWER(CONCAT('%', :city, '%'))) " +
            "AND (:foodType IS NULL OR LOWER(f.foodType) = LOWER(:foodType)) " +
            "AND (:minQuantity IS NULL OR f.quantity >= :minQuantity)")

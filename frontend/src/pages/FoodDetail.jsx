@@ -63,6 +63,14 @@ export default function FoodDetail() {
             <p><span className="font-medium">Pickup Address:</span> {food.pickupAddress}</p>
             <p><span className="font-medium">Expires:</span> {new Date(food.expiryTime).toLocaleString()}</p>
             {food.contactDetails && <p><span className="font-medium">Contact:</span> {food.contactDetails}</p>}
+            {food.status === 'CLAIMED' && food.claimedByName && (
+              <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 mt-2">
+                <span className="text-yellow-600">🤝</span>
+                <p className="text-yellow-800 font-medium">
+                  Claimed by <span className="font-semibold">{food.claimedByName}</span>
+                </p>
+              </div>
+            )}
           </div>
           <div className="flex gap-3">
             {user?.role === 'NGO' && food.status === 'AVAILABLE' && (

@@ -24,8 +24,8 @@ public class FoodController {
     private final FoodService foodService;
 
     @GetMapping
-    public ResponseEntity<Page<FoodPost>> listAvailable(Pageable pageable) {
-        return ResponseEntity.ok(foodService.listAvailable(pageable));
+    public ResponseEntity<Page<FoodPost>> listAll(Pageable pageable) {
+        return ResponseEntity.ok(foodService.listAllActive(pageable));
     }
 
     @GetMapping("/search")
@@ -61,7 +61,7 @@ public class FoodController {
     @PutMapping("/{id}/status")
     public ResponseEntity<FoodPost> updateStatus(@PathVariable UUID id,
                                                   @Valid @RequestBody StatusUpdateRequest request) {
-        return ResponseEntity.ok(foodService.updateStatus(id, request.getStatus()));
+        return ResponseEntity.ok(foodService.updateStatus(id, request.getStatus(), request.getClaimedByName()));
     }
 
     @DeleteMapping("/{id}")

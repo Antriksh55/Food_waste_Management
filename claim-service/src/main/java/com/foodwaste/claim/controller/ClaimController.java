@@ -27,7 +27,7 @@ public class ClaimController {
                                               Authentication auth) {
         UUID ngoId = UUID.fromString(auth.getName());
         String token = extractToken(auth);
-        Claim claim = claimService.createClaim(request.getFoodPostId(), ngoId, token);
+        Claim claim = claimService.createClaim(request.getFoodPostId(), ngoId, request.getNgoName(), token);
         return ResponseEntity.status(HttpStatus.CREATED).body(claim);
     }
 
