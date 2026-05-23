@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: foodwaste-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-foodwaste}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - food-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: foodwaste-auth
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-foodwaste}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKeyForFoodWastePlatformThatIsLongEnough}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - food-network
+    restart: on-failure
+
+  food-service:
+    build: ./food-service
+    container_name: foodwaste-food
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-foodwaste}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKeyForFoodWastePlatformThatIsLongEnough}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - food-network
+    restart: on-failure
+
+  claim-service:
+    build: ./claim-service
+    container_name: foodwaste-claim
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-foodwaste}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKeyForFoodWastePlatformThatIsLongEnough}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      FOOD_SERVICE_URL: http://food-service:8082
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - food-network
+    restart: on-failure
+
+  notification-service:
+    build: ./notification-service
+    container_name: foodwaste-notification
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-foodwaste}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKeyForFoodWastePlatformThatIsLongEnough}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - food-network
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: foodwaste-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - food-service
+      - claim-service
+      - notification-service
+    networks:
+      - food-network
+
+volumes:
+  postgres_data:
+
+networks:
+  food-network:
+    driver: bridge
