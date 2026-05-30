@@ -177,3 +177,5 @@ food-waste-platform/
 - Restaurant dashboard
 - NGO dashboard
 - Admin dashboard
+
+<!-- CI demo trigger -->
