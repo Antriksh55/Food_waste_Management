@@ -8,9 +8,9 @@ export default function Home() {
         <h1 className="text-4xl sm:text-5xl font-bold text-green-800 mb-6">
           Reduce Food Waste.
           <br />
-          {/* <span className="text-green-500 text-5xl sm:text-6xl font-extrabold tracking-wide">
-            Antriksh
-          // </span> */}
+          <span className="text-green-500 text-5xl sm:text-6xl font-extrabold tracking-wide">
+            Shubham
+          // </span>
           <br />
           Feed Communities.
         </h1>
