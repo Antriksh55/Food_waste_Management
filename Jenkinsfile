@@ -6,7 +6,6 @@ pipeline {
     }
 
     environment {
-        COMPOSE_FILE = 'docker-compose.yml'
         REGISTRY = 'ghcr.io'
     }
 
@@ -24,21 +23,32 @@ pipeline {
         stage('Pull Images') {
             steps {
                 echo 'Pulling latest Docker images...'
-                sh 'docker compose pull'
+                sh 'docker compose pull --ignore-pull-failures || true'
             }
         }
 
         stage('Stop Containers') {
             steps {
-                echo 'Stopping existing containers...'
-                sh 'docker compose down --remove-orphans'
+                echo 'Stopping existing app containers...'
+                sh '''
+                    docker stop foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
+                    docker rm foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying updated containers...'
-                sh 'docker compose up -d'
+                sh '''
+                    docker compose up -d \
+                        postgres \
+                        auth-service \
+                        food-service \
+                        claim-service \
+                        notification-service \
+                        frontend
+                '''
             }
         }
 
@@ -59,6 +69,8 @@ pipeline {
                         script: 'docker ps --filter status=running --format "{{.Names}}"',
                         returnStdout: true
                     ).trim()
+
+                    echo "Running containers:\n${runningContainers}"
 
                     expectedContainers.each { container ->
                         if (!runningContainers.contains(container)) {
