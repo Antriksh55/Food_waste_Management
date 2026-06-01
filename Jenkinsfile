@@ -20,10 +20,25 @@ pipeline {
             }
         }
 
-        stage('Pull Images') {
+        stage('Setup Environment') {
             steps {
-                echo 'Pulling base images (postgres, nginx)...'
-                sh 'docker compose pull postgres || true'
+                echo 'Creating .env file...'
+                sh '''
+                    cat > .env << 'EOF'
+POSTGRES_DB=foodwaste
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+JWT_SECRET=mySecretKeyForFoodWastePlatformThatIsLongEnough
+JWT_EXPIRATION=86400000
+EOF
+                '''
+            }
+        }
+
+        stage('Build Images') {
+            steps {
+                echo 'Rebuilding Docker images with latest code...'
+                sh 'docker compose build --no-cache frontend auth-service food-service claim-service notification-service'
             }
         }
 
@@ -33,21 +48,6 @@ pipeline {
                 sh '''
                     docker stop foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
                     docker rm foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
-                '''
-            }
-        }
-
-        stage('Setup Environment') {
-            steps {
-                echo 'Creating .env file for deployment...'
-                sh '''
-                    cat > .env << 'EOF'
-POSTGRES_DB=foodwaste
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-JWT_SECRET=mySecretKeyForFoodWastePlatformThatIsLongEnough
-JWT_EXPIRATION=86400000
-EOF
                 '''
             }
         }
@@ -107,7 +107,7 @@ EOF
 
     post {
         success {
-            echo 'Deployment completed successfully!'
+            echo 'Deployment completed successfully! Changes are live.'
         }
         failure {
             echo 'Deployment failed! Check logs above.'
