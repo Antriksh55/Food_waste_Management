@@ -22,8 +22,8 @@ pipeline {
 
         stage('Pull Images') {
             steps {
-                echo 'Pulling latest Docker images...'
-                sh 'docker compose pull --ignore-pull-failures || true'
+                echo 'Pulling base images (postgres, nginx)...'
+                sh 'docker compose pull postgres || true'
             }
         }
 
@@ -33,6 +33,21 @@ pipeline {
                 sh '''
                     docker stop foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
                     docker rm foodwaste-auth foodwaste-food foodwaste-claim foodwaste-notification foodwaste-frontend foodwaste-postgres 2>/dev/null || true
+                '''
+            }
+        }
+
+        stage('Setup Environment') {
+            steps {
+                echo 'Creating .env file for deployment...'
+                sh '''
+                    cat > .env << 'EOF'
+POSTGRES_DB=foodwaste
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+JWT_SECRET=mySecretKeyForFoodWastePlatformThatIsLongEnough
+JWT_EXPIRATION=86400000
+EOF
                 '''
             }
         }
@@ -56,7 +71,7 @@ pipeline {
             steps {
                 echo 'Verifying deployment...'
                 script {
-                    sleep(time: 30, unit: 'SECONDS')
+                    sleep(time: 40, unit: 'SECONDS')
                     def expectedContainers = [
                         'foodwaste-postgres',
                         'foodwaste-auth',
