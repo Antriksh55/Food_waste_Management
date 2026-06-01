@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [main, master]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   test-auth-service:
     runs-on: ubuntu-latest
