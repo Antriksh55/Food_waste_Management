@@ -9,8 +9,8 @@ export default function Home() {
           Reduce Food Waste.
           <br />
           <span className="text-green-500 text-5xl sm:text-6xl font-extrabold tracking-wide">
-            Shubham
-          // </span>
+            Shubham Raj
+           </span>
           <br />
           Feed Communities.
         </h1>
