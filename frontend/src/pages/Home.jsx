@@ -6,8 +6,12 @@ export default function Home() {
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-4 py-20 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-green-800 mb-6">
-          Reduce Food Waste.<br />
-          <span className="text-green-600">by Antriksh</span><br />
+          Reduce Food Waste.
+          <br />
+          <span className="text-green-500 text-5xl sm:text-6xl font-extrabold tracking-wide">
+            Antriksh
+          </span>
+          <br />
           Feed Communities.
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10">
