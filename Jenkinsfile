@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         COMPOSE_FILE = 'docker-compose.yml'
         REGISTRY = 'ghcr.io'
@@ -9,7 +13,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[url: 'https://github.com/Antriksh55/Food_waste_Management.git']]
+                ])
             }
         }
 
