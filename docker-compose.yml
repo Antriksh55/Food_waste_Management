@@ -107,8 +107,23 @@ services:
     networks:
       - food-network
 
+  jenkins:
+    build: ./jenkins
+    container_name: foodwaste-jenkins
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - food-network
+    restart: on-failure
+
 volumes:
   postgres_data:
+  jenkins_data:
 
 networks:
   food-network:
