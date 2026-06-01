@@ -10,7 +10,7 @@ export default function Home() {
           <br />
           {/* <span className="text-green-500 text-5xl sm:text-6xl font-extrabold tracking-wide">
             Antriksh
-          </span> */}
+          // </span> */}
           <br />
           Feed Communities.
         </h1>
