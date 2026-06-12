@@ -179,3 +179,5 @@ food-waste-platform/
 - Admin dashboard
 
 <!-- CI demo trigger -->
+
+<!-- CI trigger 2026-06-12 09:57 -->
